@@ -5,8 +5,10 @@ import cv2
 import numpy as np
 import os
 import logging
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/foo": {"origins": "http://localhost:5173"}})
 
 # Configuración
 MODEL_PATH = 'models/v1.1.h5'
@@ -30,6 +32,7 @@ def index():
 
 
 @app.route('/predict', methods=['POST'])
+@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
 def predict():
     if model is None:
         return jsonify({'error': 'Model is not loaded'}), 500
