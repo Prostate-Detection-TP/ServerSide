@@ -6,12 +6,16 @@ import numpy as np
 import os
 import logging
 from flask_cors import CORS, cross_origin
+import base64
+import io
+from PIL import Image
+
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/foo": {"origins": "http://localhost:5173"}})
 
 # Configuración
-MODEL_PATH = 'models/v1.1.h5'
+MODEL_PATH = 'models/v1.2.h5'
 PORT = 81
 
 # Configurar logging
@@ -32,7 +36,7 @@ def index():
 
 
 @app.route('/predict', methods=['POST'])
-@cross_origin(origin='localhost',headers=['Content- Type','Authorization'])
+@cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
 def predict():
     if model is None:
         return jsonify({'error': 'Model is not loaded'}), 500
@@ -47,10 +51,33 @@ def predict():
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         resize = tf.image.resize(img, (256, 256), method=tf.image.ResizeMethod.AREA)
-        prediction = model.predict(np.expand_dims(resize / 255, 0))
+        prediction = model.predict(np.expand_dims(resize / 255, 0))[0][0]
         logging.info(f"Prediction: {prediction}")
 
-        return jsonify({'prediction': str(prediction[0][0])})
+        # Calcula predictionFormated, message, significant
+        predictionFormated = f"{prediction * 100:.2f}%"
+        if prediction >= 0.5:
+            message = 'significant'
+            significant = True
+        else:
+            message = 'not-significant'
+            significant = False
+
+        # Convierte la imagen en base64
+        image_pil = Image.fromarray(cv2.cvtColor(resize.numpy().astype(np.uint8), cv2.COLOR_BGR2RGB))
+        buffered = io.BytesIO()
+        image_pil.save(buffered, format="JPEG")
+
+        # Genera una URL Blob para la imagen
+
+        response_data = {
+            'prediction': str(prediction),
+            'predictionFormated': predictionFormated,
+            'message': message,
+            'significant': significant,
+        }
+
+        return jsonify(response_data)
 
     except Exception as e:
         logging.error(f"Error processing prediction: {e}")
