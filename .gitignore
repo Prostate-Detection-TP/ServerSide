@@ -14,7 +14,7 @@ __pycache__/
 *.log
 *.h5
 
-
+/models
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
