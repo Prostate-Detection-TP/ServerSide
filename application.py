@@ -9,7 +9,7 @@ import io
 from PIL import Image
 
 application = Flask(__name__)
-cors = CORS(application, resources={r"/foo": {"origins": "http://localhost:5173"}})
+cors = CORS(application)
 
 # Configuración
 MODEL_PATH = 'models/v1.2.tflite'  # Cambiamos la ruta al modelo .tflite
@@ -35,7 +35,7 @@ def index():
 
 
 @application.route('/predict', methods=['POST'])
-@cross_origin(origins='localhost', allow_headers=['Content-Type', 'Authorization'])
+@cross_origin()
 def predict():
     if interpreter is None:
         return jsonify({'error': 'Model is not loaded'}), 500
