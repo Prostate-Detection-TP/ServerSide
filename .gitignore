@@ -7,6 +7,12 @@ instance/*
 .webassets-cache
 .env
 
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.log
+*.h5
 
 
 ### Flask.Python Stack ###
