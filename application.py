@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
-import tensorflow as tf
+import tensorflow.lite as tflite
+
 import cv2
 import numpy as np
 import logging
@@ -20,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 # Cargar el modelo al inicio
 try:
     # Cargamos el modelo TensorFlow Lite
-    interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+    interpreter = tflite.Interpreter(model_path=MODEL_PATH)
     interpreter.allocate_tensors()
     logging.info(f"Model loaded from {MODEL_PATH}")
 except Exception as e:
@@ -34,7 +35,7 @@ def index():
 
 
 @application.route('/predict', methods=['POST'])
-@cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
+@cross_origin(origins='localhost', allow_headers=['Content-Type', 'Authorization'])
 def predict():
     if interpreter is None:
         return jsonify({'error': 'Model is not loaded'}), 500
@@ -46,8 +47,8 @@ def predict():
     try:
         nparr = np.fromstring(image_file.read(), np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        resize = tf.image.resize(img, (256, 256), method=tf.image.ResizeMethod.AREA).numpy()
-        resized_normalized = np.expand_dims(resize / 255, 0).astype(np.float32)
+        resize = cv2.resize(img, (256, 256))
+        resized_normalized = np.expand_dims(resize / 255.0, 0).astype(np.float32)
 
         # Configuración de las entradas y salidas del intérprete
         input_details = interpreter.get_input_details()
