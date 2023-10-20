@@ -3,16 +3,16 @@ from tensorflow.keras.models import load_model
 import tensorflow as tf
 import cv2
 import numpy as np
-import os
+
 import logging
 from flask_cors import CORS, cross_origin
-import base64
+
 import io
 from PIL import Image
 
 
-app = Flask(__name__)
-cors = CORS(app, resources={r"/foo": {"origins": "http://localhost:5173"}})
+application = Flask(__name__)
+cors = CORS(application, resources={r"/foo": {"origins": "http://localhost:5173"}})
 
 # Configuración
 MODEL_PATH = 'models/v1.2.h5'
@@ -30,12 +30,12 @@ except Exception as e:
     model = None
 
 
-@app.route('/')
+@application.route('/')
 def index():
     return 'Welcome to the Prostate Cancer Detection API!'
 
 
-@app.route('/predict', methods=['POST'])
+@application.route('/predict', methods=['POST'])
 @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
 def predict():
     if model is None:
@@ -84,10 +84,10 @@ def predict():
         return jsonify({'error': 'Error processing prediction'}), 500
 
 
-@app.route('/health', methods=['GET'])
+@application.route('/health', methods=['GET'])
 def health_check():
     return jsonify({'status': 'OK'}), 200
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=PORT)
+    application.run(host='0.0.0.0', port=PORT)
