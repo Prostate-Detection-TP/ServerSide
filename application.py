@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import tensorflow.lite as tflite
+import tflite_runtime.interpreter as tflite
 
 import cv2
 import numpy as np
