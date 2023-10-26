@@ -9,7 +9,8 @@ import io
 from PIL import Image
 
 application = Flask(__name__)
-cors = CORS(application)
+cors = CORS(application, resources={r"/predict": {"origins": "https://web-app-rho-olive.vercel.app"}})
+
 
 # Configuración
 MODEL_PATH = 'models/v1.2.tflite'  # Cambiamos la ruta al modelo .tflite
