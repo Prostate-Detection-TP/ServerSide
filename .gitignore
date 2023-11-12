@@ -18,7 +18,7 @@ Dockerfile
 docker-compose.yml
 sdsd.py
 
-
+/tflite-env
 /models
 ### Flask.Python Stack ###
 # Byte-compiled / optimized / DLL files
