@@ -120,6 +120,7 @@ ipython_config.py
 #Pipfile.lock
 
 /models/v1.2.tflite
+/models
 
 # poetry
 #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
